@@ -29,6 +29,13 @@ public class DbServiceResource {
                 .collect(Collectors.toList());
     }
 
+    private List<Integer> getIdsByUsername(@PathVariable("username") String username) {
+        return quotesRepository.findByUsername(username)
+                .stream()
+                .map(Quote::getId)
+                .collect(Collectors.toList());
+    }
+
     @PostMapping("/add")
     public List<String> add(@RequestBody final Quotes quotes) {
         quotes.getQuotes()
@@ -38,5 +45,22 @@ public class DbServiceResource {
                     quotesRepository.save(quote);
                 });
         return getQuotesByUsername(quotes.getUsername());
+    }
+
+    @DeleteMapping("/delete/{username}")
+    public List<String> delete(@PathVariable("username") final String username) {
+        List<Quote> quotes = quotesRepository.findByUsername(username);
+        quotesRepository.deleteAll(quotes);
+        return getQuotesByUsername(username);
+    }
+
+    @PutMapping("/update/{username}")
+    public List<String> update(@PathVariable("username") final String username, @RequestBody final Quotes quotes) {
+        List<Integer> ids = getIdsByUsername(username);
+        List<String> listQuotes = quotes.getQuotes();
+        for (int i = 0; i < ids.size(); i++) {
+            quotesRepository.save(new Quote(ids.get(i), username, listQuotes.get(i)));
+        }
+        return getQuotesByUsername(username);
     }
 }

@@ -25,6 +25,12 @@ public class Quote {
         this.quote = quote;
     }
 
+    public Quote(Integer id, String username, String quote) {
+        this.id = id;
+        this.username = username;
+        this.quote = quote;
+    }
+
     public Integer getId() {
         return id;
     }
